@@ -2,6 +2,8 @@
     "files.associations": {
         "*.toml": "python",
         "windows.h": "c",
-        "windef.h": "c"
+        "windef.h": "c",
+        "parallelport.h": "c",
+        "stdio.h": "c"
     }
 }

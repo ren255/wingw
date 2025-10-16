@@ -16,12 +16,45 @@
 #define PP_STATUS  (PARALLEL_PORT_BASE + 1)
 #define PP_CONTROL (PARALLEL_PORT_BASE + 2)
 
-// ============ Internal Variables ============
 static HINSTANCE pp_dll = NULL;
+
+/**
+ * @brief パラレルポート出力関数ポインタ
+ * @details 指定アドレスに値を書き込む
+ * @param address レジスタアドレス (PP_DATA, PP_STATUS, PP_CONTROL)
+ * @param value 書き込む値 (0x00-0xff)
+ * 
+ * 使用例:
+ * - データ出力: pp_out(PP_DATA, 0xff);
+ * - 制御設定: pp_out(PP_CONTROL, 0x00);
+ */
 static void  (__stdcall *pp_out)(short, short) = NULL;
+
+/**
+ * @brief パラレルポート入力関数ポインタ
+ * @details 指定アドレスから値を読み取る
+ * @param address レジスタアドレス (PP_STATUS, PP_CONTROL)
+ * @return 読み取った値 (0x00-0xff)
+ * 
+ * 使用例:
+ * - ステータス読み取り: short s = pp_in(PP_STATUS);
+ * - 制御読み取り: short c = pp_in(PP_CONTROL);
+ */
 static short (__stdcall *pp_in)(short) = NULL;
 
-// ============ Initialization ============
+/**
+ * @brief パラレルポート初期化関数
+ * @details inpout32.dllをロードし、関数ポインタを取得する
+ * @return 成功時0、失敗時-1
+ * @note プログラム開始時に必ず呼び出すこと
+ * 
+ * 使用例:
+ * @code
+ * if (pp_init() != 0) {
+ *     return 1;
+ * }
+ * @endcode
+ */
 static inline int pp_init(void) {
     pp_dll = LoadLibrary("inpout32.dll");
     if (!pp_dll) {
@@ -36,11 +69,19 @@ static inline int pp_init(void) {
         pp_dll = NULL;
         return -1;
     }
-    pp_out(PP_CONTROL, 0x00); // Set to output mode
     return 0;
 }
 
-// ============ Cleanup ============
+/**
+ * @brief パラレルポート終了処理関数
+ * @details DLLを解放し、関数ポインタをNULLに設定する
+ * @note プログラム終了時に必ず呼び出すこと
+ * 
+ * 使用例:
+ * @code
+ * pp_close();
+ * @endcode
+ */
 static inline void pp_close(void) {
     if (pp_dll) {
         FreeLibrary(pp_dll);
@@ -48,41 +89,6 @@ static inline void pp_close(void) {
         pp_out = NULL;
         pp_in = NULL;
     }
-}
-
-// ============ Data Register (D0-D7: Pin 2-9) ============
-static inline void pp_write_data(short value) {
-    if (!pp_out) {
-        printf("Error: pp_init() not called\n");
-        return;
-    }
-    pp_out(PP_DATA, value);
-}
-
-// ============ Status Register (S3-S7: Pin 15,13,12,10,11) ============
-static inline short pp_read_status(void) {
-    if (!pp_in) {
-        printf("Error: pp_init() not called\n");
-        return 0;
-    }
-    return pp_in(PP_STATUS);
-}
-
-// ============ Control Register (C0-C3: Pin 1,14,16,17) ============
-static inline void pp_write_control(short value) {
-    if (!pp_out) {
-        printf("Error: pp_init() not called\n");
-        return;
-    }
-    pp_out(PP_CONTROL, value);
-}
-
-static inline short pp_read_control(void) {
-    if (!pp_in) {
-        printf("Error: pp_init() not called\n");
-        return 0;
-    }
-    return pp_in(PP_CONTROL);
 }
 
 #endif // PARALLELPORT_H
