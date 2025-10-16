@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.toml": "python",
+        "windows.h": "c",
+        "windef.h": "c"
+    }
+}

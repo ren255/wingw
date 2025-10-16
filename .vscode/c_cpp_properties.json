@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "name": "MinGW Ubuntu Cross Compile",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/usr/i686-w64-mingw32/include",
+        "/usr/lib/gcc/i686-w64-mingw32/*/include",
+        "/usr/share/mingw-w64/include"
+      ],
+      "defines": ["_WIN32", "__MINGW32__"],
+      "compilerPath": "/usr/bin/i686-w64-mingw32-gcc",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-x86"
+    }
+  ],
+  "version": 4
+}
