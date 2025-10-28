@@ -3,9 +3,6 @@
 #ifndef PARALLELPORT_H
 #define PARALLELPORT_H
 
-#include <windows.h>
-#include <stdio.h>
-
 // ============ User Configuration ============
 #ifndef PARALLEL_PORT_BASE
 #define PARALLEL_PORT_BASE 0x3fd8
@@ -28,7 +25,7 @@ static HINSTANCE pp_dll = NULL;
  * - データ出力: pp_out(PP_DATA, 0xff);
  * - 制御設定: pp_out(PP_CONTROL, 0x00);
  */
-static void  (__stdcall *pp_out)(short, short) = NULL;
+static void(__stdcall *pp_out)(short, short) = NULL;
 
 /**
  * @brief パラレルポート入力関数ポインタ
@@ -40,7 +37,7 @@ static void  (__stdcall *pp_out)(short, short) = NULL;
  * - ステータス読み取り: short s = pp_in(PP_STATUS);
  * - 制御読み取り: short c = pp_in(PP_CONTROL);
  */
-static short (__stdcall *pp_in)(short) = NULL;
+static short(__stdcall *pp_in)(short) = NULL;
 
 /**
  * @brief パラレルポート初期化関数
@@ -57,13 +54,13 @@ static short (__stdcall *pp_in)(short) = NULL;
  */
 static inline int pp_init(void) {
     pp_dll = LoadLibrary("inpout32.dll");
-    if (!pp_dll) {
+    if(!pp_dll) {
         printf("Error: Failed to load inpout32.dll\n");
         return -1;
     }
-    pp_out = (void (__stdcall *)(short, short))GetProcAddress(pp_dll, "Out32");
-    pp_in = (short (__stdcall *)(short))GetProcAddress(pp_dll, "Inp32");
-    if (!pp_out || !pp_in) {
+    pp_out = (void(__stdcall *)(short, short))GetProcAddress(pp_dll, "Out32");
+    pp_in = (short(__stdcall *)(short))GetProcAddress(pp_dll, "Inp32");
+    if(!pp_out || !pp_in) {
         printf("Error: Failed to get function addresses\n");
         FreeLibrary(pp_dll);
         pp_dll = NULL;
@@ -83,7 +80,7 @@ static inline int pp_init(void) {
  * @endcode
  */
 static inline void pp_close(void) {
-    if (pp_dll) {
+    if(pp_dll) {
         FreeLibrary(pp_dll);
         pp_dll = NULL;
         pp_out = NULL;
@@ -91,4 +88,4 @@ static inline void pp_close(void) {
     }
 }
 
-#endif // PARALLELPORT_H
+#endif  // PARALLELPORT_H
